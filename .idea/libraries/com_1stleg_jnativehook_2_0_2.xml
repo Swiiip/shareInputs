@@ -5,6 +5,9 @@
       <root url="jar://$MAVEN_REPOSITORY$/com/1stleg/jnativehook/2.0.2/jnativehook-2.0.2.jar!/" />
     </CLASSES>
     <JAVADOC />
-    <SOURCES />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.ideaLibSources/jnativehook-2.0.2-sources.jar!/src/java" />
+      <root url="jar://$USER_HOME$/.ideaLibSources/jnativehook-2.0.2-sources.jar!/src/test" />
+    </SOURCES>
   </library>
 </component>

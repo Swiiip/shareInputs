@@ -4,13 +4,16 @@ import java.awt.event.MouseEvent;
 
 public class EventListener extends MouseAdapter {
 
-    private JLabel _jlabel;
+    private JLabel _xLabel;
+    private JLabel _yLabel;
 
-    public EventListener(JLabel jlabel) {
-        _jlabel = jlabel;
+    public EventListener(JLabel xLabel, JLabel yLabel) {
+        _xLabel = xLabel;
+        _yLabel = yLabel;
     }
 
     public void mouseMoved(MouseEvent mouseEvent) {
-        _jlabel.setText("x : " + mouseEvent.getXOnScreen()+ ", y : " + mouseEvent.getYOnScreen());
+        _xLabel.setText("X : " + mouseEvent.getXOnScreen());
+        _yLabel.setText("Y : " + mouseEvent.getYOnScreen());
     }
 }
