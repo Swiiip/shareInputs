@@ -8,6 +8,8 @@ import org.jnativehook.mouse.NativeMouseEvent;
 import org.jnativehook.mouse.NativeMouseInputListener;
 
 import javax.swing.*;
+import java.util.HashSet;
+import java.util.Set;
 
 public class MainWindow extends JDialog implements NativeMouseInputListener, NativeKeyListener {
     private JPanel contentPane;
@@ -18,25 +20,11 @@ public class MainWindow extends JDialog implements NativeMouseInputListener, Nat
     private JLabel _mouseXLabel;
     private JLabel _mouseYLabel;
     private JLabel _mouseEventLabel;
+    private Set<Integer> _nonUnicodeKeys;
 
     public MainWindow() {
-        setContentPane(contentPane);
-        setModal(true);
-        setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-    }
-
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                MainWindow mainWindow = new MainWindow();
-                mainWindow.initUI();
-            }
-        });
-    }
-
-    private void initUI() {
-
+        _nonUnicodeKeys = new HashSet<Integer>();
+        _nonUnicodeKeys.add(NativeKeyEvent.VC_BACKSPACE);
         GlobalScreen.setEventDispatcher(new SwingDispatchService());
         GlobalScreen.addNativeMouseListener(this);
         GlobalScreen.addNativeMouseMotionListener(this);
@@ -46,6 +34,14 @@ public class MainWindow extends JDialog implements NativeMouseInputListener, Nat
         } catch (NativeHookException e) {
             e.printStackTrace();
         }
+
+    }
+
+    private void initUI() {
+
+        setContentPane(contentPane);
+        setModal(true);
+        setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 
         pack();
         setVisible(true);
@@ -85,16 +81,27 @@ public class MainWindow extends JDialog implements NativeMouseInputListener, Nat
 
     @Override
     public void nativeKeyPressed(NativeKeyEvent nativeKeyEvent) {
-        _keyboardKey.setText(String.valueOf(nativeKeyEvent.getKeyCode()));
+        if(_nonUnicodeKeys.contains(nativeKeyEvent.getKeyCode())) {
+            _keyboardKey.setText(String.valueOf(nativeKeyEvent.getKeyCode()));
+        }
     }
 
     @Override
     public void nativeKeyReleased(NativeKeyEvent nativeKeyEvent) {
-        _keyboardKey.setText(String.valueOf(nativeKeyEvent.getKeyCode()));
     }
 
     @Override
     public void nativeKeyTyped(NativeKeyEvent nativeKeyEvent) {
         _keyboardKey.setText(String.valueOf(nativeKeyEvent.getKeyChar()));
+    }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                MainWindow mainWindow = new MainWindow();
+                mainWindow.initUI();
+            }
+        });
     }
 }
