@@ -8,6 +8,8 @@ import org.jnativehook.mouse.NativeMouseEvent;
 import org.jnativehook.mouse.NativeMouseInputListener;
 
 import javax.swing.*;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -21,10 +23,21 @@ public class MainWindow extends JDialog implements NativeMouseInputListener, Nat
     private JLabel _mouseYLabel;
     private JLabel _mouseEventLabel;
     private Set<Integer> _nonUnicodeKeys;
+    private TCPClient _tcpClient;
+    private ObjectOutputStream _oos;
 
     public MainWindow() {
         _nonUnicodeKeys = new HashSet<Integer>();
         _nonUnicodeKeys.add(NativeKeyEvent.VC_BACKSPACE);
+
+        _tcpClient = new TCPClient();
+        try {
+            _oos = new ObjectOutputStream((_tcpClient.outToServer()));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
         GlobalScreen.setEventDispatcher(new SwingDispatchService());
         GlobalScreen.addNativeMouseListener(this);
         GlobalScreen.addNativeMouseMotionListener(this);
@@ -61,6 +74,12 @@ public class MainWindow extends JDialog implements NativeMouseInputListener, Nat
     @Override
     public void nativeMousePressed(NativeMouseEvent nativeMouseEvent) {
         _mouseEventLabel.setText("Mouse pressed");
+        try {
+            _oos.writeObject(nativeMouseEvent);
+            _oos.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -92,7 +111,8 @@ public class MainWindow extends JDialog implements NativeMouseInputListener, Nat
 
     @Override
     public void nativeKeyTyped(NativeKeyEvent nativeKeyEvent) {
-        _keyboardKey.setText(String.valueOf(nativeKeyEvent.getKeyChar()));
+        if(Character.isDefined(nativeKeyEvent.getKeyChar()))
+            _keyboardKey.setText(String.valueOf(nativeKeyEvent.getKeyChar()));
     }
 
     public static void main(String[] args) {
